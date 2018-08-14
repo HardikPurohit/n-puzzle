@@ -7,8 +7,8 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 const cardStyle = {
-  paddingTop: 40,
-  paddingBottom: 40,
+  paddingTop: 30,
+  paddingBottom: 30,
   paddingRight: 80,
   paddingLeft: 80
 
@@ -29,6 +29,35 @@ class App extends Component {
     this.resetClick = this.resetClick.bind(this);
     this.handleMenuIconClick = this.handleMenuIconClick.bind(this);
     this.handleMenuClose = this.handleMenuClose.bind(this);
+  }
+  componentDidMount() {
+    window.addEventListener(
+      "keydown",
+      (e) => {
+        var emptyEle = parseInt(document.querySelector('p:empty').id);
+        let matrix = this.state.matrix;
+        let row = Math.floor(emptyEle / matrix);
+        let col = emptyEle % matrix;
+        switch(e.keyCode) {
+          case 40: // down
+            row = row - 1;
+            break;
+          case 38: // up 
+            row = row + 1;
+            break;
+          case 39: // right
+            col = col - 1;
+            break;
+          case 37: // left
+            col = col + 1;
+            break;
+        }
+        if(row >= 0 && col >= 0 && row < matrix && col < matrix) {
+          var index = row * matrix + col;
+          this.swapTheEleAndCheckWinStatus(index, emptyEle);
+        }
+      }
+    )
   }
   intiateState = () => {
     this.state.problem_state = generateRandomNumbers(this.state.matrix);
@@ -55,15 +84,7 @@ class App extends Component {
       console.log(position);
       let neighbours = getNeighbours(position[0], position[1], array_element + 1, matrix);
       let index_to_move = value_to_be_moved(neighbours, this.state.problem_state);
-      if(index_to_move != undefined) {
-        this.state.moves++;
-        this.setState(swapTheElements(array_element, index_to_move, this.state));
-      }
-      if(this.state.problem_state.join('') == this.state.goal_state.join('') ) {
-        var won_string = "you won in " + this.state.moves + " moves !!";
-        this.resetState(this.state.matrix);
-        alert(won_string);
-      }
+      this.swapTheEleAndCheckWinStatus(array_element, index_to_move);
     }
   }
   resetClick(event) {
@@ -83,6 +104,17 @@ class App extends Component {
       this.setState(currentState);
     }
   }
+  swapTheEleAndCheckWinStatus = (index_to_be_moved, blank_index) => {
+    if(index_to_be_moved != undefined) {
+      this.state.moves++;
+      this.setState(swapTheElements(index_to_be_moved, blank_index, this.state));
+    }
+    if(this.state.problem_state.join('') == this.state.goal_state.join('') ) {
+      var won_string = "you won in " + this.state.moves + " moves !!";
+      this.resetState(this.state.matrix);
+      alert(won_string);
+    }
+  }
   render() {
     return (
       <Grid container justify="center">
@@ -92,7 +124,7 @@ class App extends Component {
           direction="column"
           alignItems="center"
           justify="center"
-          style={{ minHeight: '100vh' }}>
+          style={{ minHeight: '80vh' }}>
           <Card style={cardStyle}>
             <br />
             <Grid item xs={12} style={{textAlign: 'center'}}>
@@ -193,6 +225,7 @@ function swapTheElements(clicked_index, blank_index, state) {
   var blank_ele = state.problem_state[blank_index];
   state.problem_state[blank_index] = state.problem_state[clicked_index];
   state.problem_state[clicked_index] = blank_ele;
+  console.log(clicked_index + " " + blank_index + ' '+state.problem_state);
   return state;
 }
 
