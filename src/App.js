@@ -59,7 +59,6 @@ class App extends Component {
         this.state.moves++;
         this.setState(swapTheElements(array_element, index_to_move, this.state));
       }
-      debugger;
       if(this.state.problem_state.join('') == this.state.goal_state.join('') ) {
         var won_string = "you won in " + this.state.moves + " moves !!";
         this.resetState(this.state.matrix);
