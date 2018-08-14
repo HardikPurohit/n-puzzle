@@ -84,7 +84,9 @@ class App extends Component {
       console.log(position);
       let neighbours = getNeighbours(position[0], position[1], array_element + 1, matrix);
       let index_to_move = value_to_be_moved(neighbours, this.state.problem_state);
-      this.swapTheEleAndCheckWinStatus(array_element, index_to_move);
+      if(index_to_move != undefined) {
+        this.swapTheEleAndCheckWinStatus(array_element, index_to_move);
+      }
     }
   }
   resetClick(event) {
